@@ -1,17 +1,19 @@
+using System.ComponentModel.DataAnnotations;
 
 namespace ProyectoFinalMVC.Models;
 
 public class TutorialGuardado
-{
+{   
+    [Key]
     public int IdTutorialGuardado { get; set; }
+    
+    public int IdListaPersonal { get; set; }
 
-    public int PersonalListId { get; set; }
-
-    public PersonalList PersonalList { get; set; } = null!;
+    public ListaPersonal ListaPersonal { get; set; } = null!;
 
     public int TutorialId { get; set; }
 
     public Tutorial Tutorial { get; set; } = null!;
 
-    public DateTime SavedAt { get; set; } = DateTime.UtcNow;
+    public DateTime FechaGuardado { get; set; } = DateTime.UtcNow;
 }

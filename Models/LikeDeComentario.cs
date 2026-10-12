@@ -1,8 +1,10 @@
 
+using System.ComponentModel.DataAnnotations;
 namespace ProyectoFinalMVC.Models;
 
 public class LikeDeComentario
 {
+    [Key]
     public int IdLikeDeComentario { get; set; }
 
     public int UsuarioId { get; set; }
