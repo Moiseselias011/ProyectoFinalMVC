@@ -1,0 +1,9 @@
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.AssemblyInfoInputs.cache
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.AssemblyInfo.cs
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.csproj.CoreCompileInputs.cache
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.RazorAssemblyInfo.cache
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.RazorAssemblyInfo.cs
+C:\Users\KEVIN\Documents\GitHub\ProyectoFinalMVC\obj\Debug\net10.0\ProyectoFinalMVC.sourcelink.json
