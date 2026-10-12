@@ -1,0 +1,11 @@
+
+# Archivos generados por .NET
+bin/
+obj/
+
+# Configuración local de Visual Studio
+.vs/
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
