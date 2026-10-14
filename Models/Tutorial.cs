@@ -6,7 +6,7 @@ namespace ProyectoFinalMVC.Models;
     public class Tutorial
     {   
         [Key]
-        public int idtutorial{get;set;}
+        public int Idtutorial{get;set;}
 
         [Required, MaxLength(200)]
         public string  Titulo{get;set;} = string.Empty;
