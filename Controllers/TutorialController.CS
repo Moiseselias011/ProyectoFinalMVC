@@ -11,15 +11,15 @@ namespace ProyectoFinalMVC
     public class TutorialController : Controller
     {
         private readonly ProyectoFinalMVCContext _context;
-        private readonly ITutorialesService _tutorialesService;
+       // private readonly ITutorialesService _tutorialesService;
 
-        public TutorialController(
+        /*public TutorialController(
             ProyectoFinalMVCContext context,
             ITutorialesService tutorialesService)
         {
             _context = context;
             _tutorialesService = tutorialesService;
-        }
+        }*/
 
         // 1. LISTAR TUTORIALES (Index)
 
@@ -57,7 +57,7 @@ namespace ProyectoFinalMVC
                 totalTutoriales / (double)tamañoPagina);
 
             var tutoriales = await query
-                .OrderBy(t => t.idtutorial)
+                .OrderBy(t => t.Idtutorial)
                 .Skip((pagina - 1) * tamañoPagina)
                 .Take(tamañoPagina)
                 .ToListAsync();
@@ -86,7 +86,7 @@ namespace ProyectoFinalMVC
                 .Include(t => t.Tecnologia)
                 .Include(t => t.Comentarios)
                 .Include(t => t.Likes)
-                .FirstOrDefaultAsync(t => t.idtutorial == id);
+                .FirstOrDefaultAsync(t => t.Idtutorial == id);
 
             if (tutorial == null)
             {

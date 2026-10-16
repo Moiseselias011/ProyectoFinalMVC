@@ -33,7 +33,7 @@ public class LikeController : Controller
         if (tutorialId <= 0) return BadRequest();
 
         bool existeTutorial = await _context.Set<Tutorial>()
-            .AnyAsync(t => t.idtutorial == tutorialId);
+            .AnyAsync(t => t.Idtutorial == tutorialId);
 
         if (!existeTutorial) return NotFound();
 

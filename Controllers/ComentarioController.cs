@@ -20,26 +20,31 @@ public class ComentarioController : Controller
     private int? ObtenerUsuarioId()
     {
         string? valorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return int.TryParse(valorId, out int usuarioId) ? usuarioId : null;
+
+        return int.TryParse(valorId, out int usuarioId)
+            ? usuarioId
+            : null;
     }
 
     // Listar los comentarios principales de un tutorial.
     // Las respuestas se incluyen dentro de cada comentario.
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> Index(int idtutorial, int pagina = 1)
+    public async Task<IActionResult> Index(int idTutorial, int pagina = 1)
     {
-        if (idtutorial <= 0) return NotFound();
+        if (idTutorial <= 0)
+            return NotFound();
 
         var tutorial = await _context.Set<Tutorial>()
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.idtutorial == idtutorial);
+            .FirstOrDefaultAsync(t => t.Idtutorial == idTutorial);
 
-        if (tutorial is null) return NotFound();
+        if (tutorial is null)
+            return NotFound();
 
         int totalElementos = await _context.Set<Comentario>()
             .CountAsync(c =>
-                c.idtutorial == idtutorial &&
+                c.idtutorial == idTutorial &&
                 c.ComentarioPadreId == null
             );
 
@@ -52,7 +57,7 @@ public class ComentarioController : Controller
 
         var comentarios = await _context.Set<Comentario>()
             .Where(c =>
-                c.idtutorial == idtutorial &&
+                c.idtutorial == idTutorial &&
                 c.ComentarioPadreId == null
             )
             .Include(c => c.Usuario)
@@ -67,7 +72,7 @@ public class ComentarioController : Controller
             .ToListAsync();
 
         ViewBag.Tutorial = tutorial;
-        ViewBag.IdTutorial = idtutorial;
+        ViewBag.IdTutorial = idTutorial;
         ViewBag.Pagina = pagina;
         ViewBag.TotalPaginas = totalPaginas;
         ViewBag.TotalElementos = totalElementos;
@@ -79,16 +84,21 @@ public class ComentarioController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Crear(int idtutorial, string? contenido)
+    public async Task<IActionResult> Crear(int idTutorial, string? contenido)
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
 
-        var tutorialExiste = await _context.Set<Tutorial>()
-            .AnyAsync(t => t.idtutorial == idtutorial);
+        if (idTutorial <= 0)
+            return NotFound();
 
-        if (!tutorialExiste) return NotFound();
+        bool tutorialExiste = await _context.Set<Tutorial>()
+            .AnyAsync(t => t.Idtutorial == idTutorial);
+
+        if (!tutorialExiste)
+            return NotFound();
 
         contenido = contenido?.Trim();
 
@@ -97,21 +107,22 @@ public class ComentarioController : Controller
             TempData["Error"] =
                 "El comentario es obligatorio y no puede superar los 1000 caracteres.";
 
-            return RedirectToAction(nameof(Index), new { idtutorial });
+            return RedirectToAction(nameof(Index), new { idTutorial });
         }
 
         var comentario = new Comentario
         {
-            idtutorial = idtutorial,
+            idtutorial = idTutorial,
             Idusuario = usuarioId.Value,
             Contenido = contenido,
             FechaCreacion = DateTime.UtcNow
         };
 
         _context.Set<Comentario>().Add(comentario);
+
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index), new { idtutorial });
+        return RedirectToAction(nameof(Index), new { idTutorial });
     }
 
     // Responder a un comentario del mismo tutorial.
@@ -119,20 +130,25 @@ public class ComentarioController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Responder(
-        int idtutorial,
+        int idTutorial,
         int comentarioPadreId,
         string? contenido)
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
+
+        if (idTutorial <= 0)
+            return NotFound();
 
         var comentarioPadre = await _context.Set<Comentario>()
             .FirstOrDefaultAsync(c => c.Idcomentario == comentarioPadreId);
 
-        if (comentarioPadre is null) return NotFound();
+        if (comentarioPadre is null)
+            return NotFound();
 
-        if (comentarioPadre.idtutorial != idtutorial)
+        if (comentarioPadre.idtutorial != idTutorial)
             return BadRequest();
 
         contenido = contenido?.Trim();
@@ -142,12 +158,12 @@ public class ComentarioController : Controller
             TempData["Error"] =
                 "La respuesta es obligatoria y no puede superar los 1000 caracteres.";
 
-            return RedirectToAction(nameof(Index), new { idtutorial });
+            return RedirectToAction(nameof(Index), new { idTutorial });
         }
 
         var respuesta = new Comentario
         {
-            idtutorial = idtutorial,
+            idtutorial = idTutorial,
             ComentarioPadreId = comentarioPadreId,
             Idusuario = usuarioId.Value,
             Contenido = contenido,
@@ -155,9 +171,10 @@ public class ComentarioController : Controller
         };
 
         _context.Set<Comentario>().Add(respuesta);
+
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index), new { idtutorial });
+        return RedirectToAction(nameof(Index), new { idTutorial });
     }
 
     // Mostrar el formulario de edición del comentario propio.
@@ -167,13 +184,15 @@ public class ComentarioController : Controller
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
 
         var comentario = await _context.Set<Comentario>()
             .Include(c => c.Tutorial)
             .FirstOrDefaultAsync(c => c.Idcomentario == id);
 
-        if (comentario is null) return NotFound();
+        if (comentario is null)
+            return NotFound();
 
         if (comentario.Idusuario != usuarioId.Value)
             return Forbid();
@@ -189,12 +208,14 @@ public class ComentarioController : Controller
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
 
         var comentario = await _context.Set<Comentario>()
             .FirstOrDefaultAsync(c => c.Idcomentario == id);
 
-        if (comentario is null) return NotFound();
+        if (comentario is null)
+            return NotFound();
 
         if (comentario.Idusuario != usuarioId.Value)
             return Forbid();
@@ -217,7 +238,7 @@ public class ComentarioController : Controller
 
         return RedirectToAction(
             nameof(Index),
-            new { idtutorial = comentario.idtutorial }
+            new { idTutorial = comentario.idtutorial }
         );
     }
 
@@ -229,12 +250,14 @@ public class ComentarioController : Controller
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
 
         var comentario = await _context.Set<Comentario>()
             .FirstOrDefaultAsync(c => c.Idcomentario == id);
 
-        if (comentario is null) return NotFound();
+        if (comentario is null)
+            return NotFound();
 
         if (comentario.Idusuario != usuarioId.Value &&
             !User.IsInRole(Roles.Administrador))
@@ -254,12 +277,14 @@ public class ComentarioController : Controller
     {
         int? usuarioId = ObtenerUsuarioId();
 
-        if (usuarioId is null) return Challenge();
+        if (usuarioId is null)
+            return Challenge();
 
         var comentario = await _context.Set<Comentario>()
             .FirstOrDefaultAsync(c => c.Idcomentario == id);
 
-        if (comentario is null) return NotFound();
+        if (comentario is null)
+            return NotFound();
 
         if (comentario.Idusuario != usuarioId.Value &&
             !User.IsInRole(Roles.Administrador))
@@ -267,26 +292,32 @@ public class ComentarioController : Controller
             return Forbid();
         }
 
-        int idtutorial = comentario.idtutorial;
+        int idTutorial = comentario.idtutorial;
 
-        await EliminarComentarioYRespuestasAsync(comentario.Idcomentario);
+        await EliminarComentarioAsync(comentario.Idcomentario);
+
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index), new { idtutorial });
+        return RedirectToAction(nameof(Index), new { idTutorial });
     }
 
-    // Eliminar recursivamente las respuestas y sus Me gusta
-    // antes de eliminar el comentario principal.
-    private async Task EliminarComentarioYRespuestasAsync(int comentarioId)
+    // Eliminar los Me gusta y conservar las respuestas,
+    // convirtiéndolas en comentarios principales.
+    private async Task EliminarComentarioAsync(int comentarioId)
     {
-        var idsHijos = await _context.Set<Comentario>()
+        var comentario = await _context.Set<Comentario>()
+            .FindAsync(comentarioId);
+
+        if (comentario is null)
+            return;
+
+        var respuestas = await _context.Set<Comentario>()
             .Where(c => c.ComentarioPadreId == comentarioId)
-            .Select(c => c.Idcomentario)
             .ToListAsync();
 
-        foreach (int idHijo in idsHijos)
+        foreach (var respuesta in respuestas)
         {
-            await EliminarComentarioYRespuestasAsync(idHijo);
+            respuesta.ComentarioPadreId = null;
         }
 
         var likes = await _context.Set<LikeDeComentario>()
@@ -295,12 +326,6 @@ public class ComentarioController : Controller
 
         _context.Set<LikeDeComentario>().RemoveRange(likes);
 
-        var comentario = await _context.Set<Comentario>()
-            .FindAsync(comentarioId);
-
-        if (comentario is not null)
-        {
-            _context.Set<Comentario>().Remove(comentario);
-        }
+        _context.Set<Comentario>().Remove(comentario);
     }
 }
