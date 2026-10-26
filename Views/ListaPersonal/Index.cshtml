@@ -1,0 +1,41 @@
+@model IEnumerable<ProyectoFinalMVC.Models.ListaPersonal>
+@{
+    ViewData["Title"] = "Mis listas";
+}
+
+<h1>Mis listas</h1>
+<hr />
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+<p><a asp-controller="ListaPersonal" asp-action="Crear" class="btn btn-primary">Crear lista</a></p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Todavía no tienes listas. Crea una para guardar tus tutoriales favoritos.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var lista in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@lista.Nombre</h5>
+                        <p class="card-text text-muted">@lista.TutorialesGuardados.Count tutoriales guardados</p>
+                        <small class="text-muted">Creada @lista.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy")</small>
+                    </div>
+                    <div class="card-footer bg-white d-flex gap-2 flex-wrap">
+                        <a asp-controller="ListaPersonal" asp-action="Detalle" asp-route-id="@lista.IdListaPersonal" class="btn btn-sm btn-outline-primary">Ver tutoriales</a>
+                        <a asp-controller="ListaPersonal" asp-action="Editar" asp-route-id="@lista.IdListaPersonal" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        <a asp-controller="ListaPersonal" asp-action="Eliminar" asp-route-id="@lista.IdListaPersonal" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

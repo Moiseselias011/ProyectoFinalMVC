@@ -1,0 +1,70 @@
+@model IEnumerable<ProyectoFinalMVC.Models.Tutorial>
+@{
+    ViewData["Title"] = "Tutoriales";
+}
+
+<h1>Tutoriales</h1>
+<hr />
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeExito"]</div>
+}
+
+<p>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a asp-controller="Tutorial" asp-action="Crear" class="btn btn-primary">Publicar tutorial</a>
+    }
+    else
+    {
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary">Inicia sesión para publicar</a>
+    }
+</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Todavía no hay tutoriales publicados.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var tutorial in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(tutorial.UrlImagen))
+                    {
+                        <img src="@tutorial.UrlImagen" class="card-img-top" alt="@tutorial.Titulo" style="max-height: 180px; object-fit: cover;" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@tutorial.Titulo</h5>
+                        <p class="card-text text-muted">@tutorial.Descripcion</p>
+                        <p class="mb-1">
+                            <span class="badge bg-secondary">@tutorial.Tecnologia?.Nombre</span>
+                            <span class="badge bg-info text-dark">@tutorial.Likes.Count Me gusta</span>
+                        </p>
+                        <small class="text-muted">
+                            Por @tutorial.Usuario?.NombreUsuario · @tutorial.FechaPublicacion.ToLocalTime().ToString("dd/MM/yyyy")
+                        </small>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@tutorial.Idtutorial" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* PAGINACIÓN *@
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" asp-controller="Tutorial" asp-action="Index" asp-route-pagina="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

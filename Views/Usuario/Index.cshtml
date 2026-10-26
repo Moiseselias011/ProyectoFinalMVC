@@ -1,0 +1,60 @@
+@model IEnumerable<ProyectoFinalMVC.Models.Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h1>Usuarios</h1>
+<hr />
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeExito"]</div>
+}
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger">@TempData["MensajeError"]</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Registro</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in Model)
+            {
+                <tr>
+                    <td>@usuario.Id_usuario</td>
+                    <td>@usuario.NombreUsuario</td>
+                    <td>@usuario.Email</td>
+                    <td>@usuario.Rol</td>
+                    <td>@usuario.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                    <td class="d-flex gap-1">
+                        <a asp-controller="Usuario" asp-action="Detalle" asp-route-id="@usuario.Id_usuario" class="btn btn-sm btn-outline-primary">Detalle</a>
+                        <a asp-controller="Usuario" asp-action="CambiarRol" asp-route-id="@usuario.Id_usuario" class="btn btn-sm btn-outline-secondary">Rol</a>
+                        <a asp-controller="Usuario" asp-action="Eliminar" asp-route-id="@usuario.Id_usuario" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* PAGINACIÓN *@
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == (int)ViewBag.PaginaActual ? "active" : "")">
+                <a class="page-link" asp-controller="Usuario" asp-action="Index" asp-route-pagina="@i">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

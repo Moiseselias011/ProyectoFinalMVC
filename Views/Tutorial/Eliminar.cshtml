@@ -1,0 +1,24 @@
+@model ProyectoFinalMVC.Models.Tutorial
+@{
+    ViewData["Title"] = "Eliminar tutorial";
+}
+
+<h1>Eliminar tutorial</h1>
+<hr />
+
+<div class="alert alert-danger">
+    ¿Seguro que quieres eliminar el tutorial "<strong>@Model.Titulo</strong>"? Esta acción no se puede deshacer.
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Titulo</h5>
+        <p class="card-text">@Model.Descripcion</p>
+        <small class="text-muted">Tecnología: @Model.Tecnologia?.Nombre · Autor: @Model.Usuario?.NombreUsuario</small>
+    </div>
+</div>
+
+<form asp-controller="Tutorial" asp-action="Eliminar" asp-route-id="@Model.Idtutorial" method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@Model.Idtutorial" class="btn btn-outline-secondary">Cancelar</a>
+</form>

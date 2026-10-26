@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Crear lista";
+}
+
+<h1>Crear lista</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="ListaPersonal" asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre de la lista</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" maxlength="100" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Crear</button>
+            <a asp-controller="ListaPersonal" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

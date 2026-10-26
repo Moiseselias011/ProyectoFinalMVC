@@ -1,0 +1,16 @@
+@model ProyectoFinalMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Eliminar cuenta";
+}
+
+<h1>Eliminar cuenta</h1>
+<hr />
+
+<div class="alert alert-danger">
+    ¿Seguro que quieres eliminar la cuenta de "<strong>@Model.NombreUsuario</strong>"? Se eliminarán también sus tutoriales, comentarios, listas y likes.
+</div>
+
+<form asp-controller="Usuario" asp-action="Eliminar" asp-route-id="@Model.Id_usuario" method="post">
+    <button type="submit" class="btn btn-danger">Eliminar cuenta</button>
+    <a asp-controller="Usuario" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>

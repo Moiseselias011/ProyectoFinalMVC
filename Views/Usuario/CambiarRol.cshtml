@@ -1,0 +1,30 @@
+@model ProyectoFinalMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Cambiar rol";
+}
+
+<h1>Cambiar rol</h1>
+<hr />
+
+<div class="alert alert-warning">
+    Estás a punto de cambiar el rol del usuario "<strong>@Model.NombreUsuario</strong>".
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Usuario" asp-action="CambiarRol" asp-route-id_usuario="@Model.Id_usuario" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <select name="rol" class="form-select">
+                    <option value="Usuario" selected="@(Model.Rol == "Usuario")">Usuario</option>
+                    <option value="Administrador" selected="@(Model.Rol == "Administrador")">Administrador</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar rol</button>
+            <a asp-controller="Usuario" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

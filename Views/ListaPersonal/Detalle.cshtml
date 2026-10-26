@@ -1,0 +1,65 @@
+@model IEnumerable<ProyectoFinalMVC.Models.TutorialGuardado>
+@{
+    ViewData["Title"] = "Tutoriales de la lista";
+    var lista = (ProyectoFinalMVC.Models.ListaPersonal)ViewBag.ListaPersonal;
+}
+
+<h1>@lista.Nombre</h1>
+<p class="text-muted">Tutoriales guardados: @ViewBag.TotalElementos</p>
+<hr />
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Esta lista todavía no tiene tutoriales guardados.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Tutorial</th>
+                    <th>Autor</th>
+                    <th>Guardado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var guardado in Model)
+                {
+                    <tr>
+                        <td>@guardado.Tutorial?.Titulo</td>
+                        <td>@guardado.Tutorial?.Usuario?.NombreUsuario</td>
+                        <td>@guardado.FechaGuardado.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                        <td class="d-flex gap-2">
+                            <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@guardado.TutorialId" class="btn btn-sm btn-outline-primary">Ver</a>
+                            <form asp-controller="TutorialGuardado" asp-action="Eliminar" method="post">
+                                <input type="hidden" name="idTutorialGuardado" value="@guardado.IdTutorialGuardado" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* PAGINACIÓN *@
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.Pagina ? "active" : "")">
+                    <a class="page-link" asp-controller="ListaPersonal" asp-action="Detalle" asp-route-id="@lista.IdListaPersonal" asp-route-pagina="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<a asp-controller="ListaPersonal" asp-action="Index" class="btn btn-outline-secondary">Volver a mis listas</a>

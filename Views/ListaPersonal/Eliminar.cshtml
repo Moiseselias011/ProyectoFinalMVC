@@ -1,0 +1,16 @@
+@model ProyectoFinalMVC.Models.ListaPersonal
+@{
+    ViewData["Title"] = "Eliminar lista";
+}
+
+<h1>Eliminar lista</h1>
+<hr />
+
+<div class="alert alert-danger">
+    ¿Seguro que quieres eliminar la lista "<strong>@Model.Nombre</strong>"? Se quitarán también los tutoriales guardados en ella (los tutoriales originales no se eliminan).
+</div>
+
+<form asp-controller="ListaPersonal" asp-action="Eliminar" asp-route-id="@Model.IdListaPersonal" method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-controller="ListaPersonal" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>

@@ -1,0 +1,49 @@
+@model ProyectoFinalMVC.Models.Tutorial
+@{
+    ViewData["Title"] = "Publicar tutorial";
+}
+
+<h1>Publicar tutorial</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-controller="Tutorial" asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label">Título</label>
+                <input asp-for="Titulo" class="form-control" maxlength="200" required />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Descripcion" class="form-label">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control" rows="4" maxlength="1000" required></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Url" class="form-label">URL del video de YouTube</label>
+                <input asp-for="Url" class="form-control" maxlength="200" required />
+                <span asp-validation-for="Url" class="text-danger"></span>
+                <small class="text-muted">La miniatura se tomará automáticamente del video.</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TecnologiaId" class="form-label">Tecnología</label>
+                <select asp-for="TecnologiaId" class="form-select" asp-items="ViewBag.Tecnologias" required>
+                    <option value="">-- Selecciona una tecnología --</option>
+                </select>
+                <span asp-validation-for="TecnologiaId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Publicar</button>
+            <a asp-controller="Tutorial" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
