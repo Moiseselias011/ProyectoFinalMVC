@@ -1,0 +1,31 @@
+@model ProyectoFinalMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Editar perfil";
+}
+
+<h1>Editar perfil</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form asp-controller="Cuenta" asp-action="EditarPerfil" method="post">
+            <div class="mb-3">
+                <label for="NombreUsuario" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="NombreUsuario" name="NombreUsuario" value="@Model.NombreUsuario" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a asp-controller="Cuenta" asp-action="Perfil" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

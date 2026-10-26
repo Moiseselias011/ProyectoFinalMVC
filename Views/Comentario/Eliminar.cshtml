@@ -1,0 +1,23 @@
+@model ProyectoFinalMVC.Models.Comentario
+@{
+    ViewData["Title"] = "Eliminar comentario";
+}
+
+<h1>Eliminar comentario</h1>
+<hr />
+
+<div class="alert alert-danger">
+    ¿Seguro que quieres eliminar este comentario? Sus respuestas se conservarán como comentarios principales.
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <strong>@Model.Usuario?.NombreUsuario</strong>
+        <p class="mt-2 mb-0">@Model.Contenido</p>
+    </div>
+</div>
+
+<form asp-controller="Comentario" asp-action="Eliminar" asp-route-id="@Model.Idcomentario" method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-controller="Comentario" asp-action="Index" asp-route-idTutorial="@Model.idtutorial" class="btn btn-outline-secondary">Cancelar</a>
+</form>

@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<h1>Registro</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+        @if (TempData["Mensaje De Exito"] != null)
+        {
+            <div class="alert alert-success">@TempData["Mensaje De Exito"]</div>
+        }
+
+        <form asp-controller="Auth" asp-action="Registro" method="post">
+            <div class="mb-3">
+                <label for="NombreUsuario" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="NombreUsuario" name="NombreUsuario" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="Email" name="Email" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="Contrasena" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="Contrasena" name="Contrasena" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="ConfirmacionDeContrasena" class="form-label">Confirmar contraseña</label>
+                <input type="password" class="form-control" id="ConfirmacionDeContrasena" name="ConfirmacionDeContrasena" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrarme</button>
+        </form>
+
+        <p class="mt-3">
+            ¿Ya tienes cuenta? <a asp-controller="Auth" asp-action="Login">Inicia sesión aquí</a>.
+        </p>
+    </div>
+</div>

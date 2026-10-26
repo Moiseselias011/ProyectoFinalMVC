@@ -1,0 +1,132 @@
+@model IEnumerable<ProyectoFinalMVC.Models.Comentario>
+@{
+    ViewData["Title"] = "Comentarios";
+    var tutorial = (ProyectoFinalMVC.Models.Tutorial)ViewBag.Tutorial;
+    var usuarioId = (int?)ViewBag.UsuarioId;
+}
+
+<h1>Comentarios</h1>
+<p class="text-muted">
+    Tutorial: <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@tutorial.Idtutorial">@tutorial.Titulo</a>
+</p>
+<hr />
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@* FORMULARIO PARA AGREGAR UN COMENTARIO NUEVO *@
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-controller="Comentario" asp-action="Crear" method="post">
+                <input type="hidden" name="idTutorial" value="@tutorial.Idtutorial" />
+                <div class="mb-3">
+                    <textarea name="contenido" class="form-control" rows="3" maxlength="1000" placeholder="Escribe un comentario..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Comentar</button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mb-4">
+        <a asp-controller="Auth" asp-action="Login">Inicia sesión</a> para dejar un comentario.
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Todavía no hay comentarios.</div>
+}
+else
+{
+    foreach (var comentario in Model)
+    {
+        <div class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between">
+                <strong>@comentario.Usuario?.NombreUsuario</strong>
+                <small class="text-muted">@comentario.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+            <p class="mt-2 mb-2">@comentario.Contenido</p>
+
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <small class="text-muted">@comentario.Likes.Count Me gusta</small>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="LikeDeComentario" asp-action="Crear" method="post" class="d-inline">
+                        <input type="hidden" name="comentarioId" value="@comentario.Idcomentario" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Me gusta</button>
+                    </form>
+
+                    <form asp-controller="LikeDeComentario" asp-action="Eliminar" method="post" class="d-inline">
+                        <input type="hidden" name="comentarioId" value="@comentario.Idcomentario" />
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Quitar like</button>
+                    </form>
+
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="document.getElementById('respuesta-@comentario.Idcomentario').classList.toggle('d-none')">Responder</button>
+
+                    @if (usuarioId == comentario.Idusuario)
+                    {
+                        <a asp-controller="Comentario" asp-action="Editar" asp-route-id="@comentario.Idcomentario" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    }
+
+                    @if (usuarioId == comentario.Idusuario || User.IsInRole("Administrador"))
+                    {
+                        <a asp-controller="Comentario" asp-action="Eliminar" asp-route-id="@comentario.Idcomentario" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    }
+                }
+            </div>
+
+            @* FORMULARIO PARA RESPONDER *@
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div id="respuesta-@comentario.Idcomentario" class="d-none mt-3">
+                    <form asp-controller="Comentario" asp-action="Responder" method="post">
+                        <input type="hidden" name="idTutorial" value="@tutorial.Idtutorial" />
+                        <input type="hidden" name="comentarioPadreId" value="@comentario.Idcomentario" />
+                        <textarea name="contenido" class="form-control mb-2" rows="2" maxlength="1000" placeholder="Escribe una respuesta..." required></textarea>
+                        <button type="submit" class="btn btn-sm btn-success">Responder</button>
+                    </form>
+                </div>
+            }
+
+            @* RESPUESTAS *@
+            @foreach (var respuesta in comentario.Respuestas.OrderByDescending(r => r.FechaCreacion))
+            {
+                <div class="border-start ps-3 mt-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>@respuesta.Usuario?.NombreUsuario</strong>
+                        <small class="text-muted">@respuesta.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <p class="mt-1 mb-1">@respuesta.Contenido</p>
+                    <small class="text-muted">@respuesta.Likes.Count Me gusta</small>
+
+                    @if (User.Identity?.IsAuthenticated == true && (usuarioId == respuesta.Idusuario || User.IsInRole("Administrador")))
+                    {
+                        <div class="mt-1">
+                            <a asp-controller="Comentario" asp-action="Editar" asp-route-id="@respuesta.Idcomentario" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <a asp-controller="Comentario" asp-action="Eliminar" asp-route-id="@respuesta.Idcomentario" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @* PAGINACIÓN *@
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.Pagina ? "active" : "")">
+                    <a class="page-link" asp-controller="Comentario" asp-action="Index" asp-route-idTutorial="@tutorial.Idtutorial" asp-route-pagina="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

@@ -1,0 +1,26 @@
+@model ProyectoFinalMVC.Models.Comentario
+@{
+    ViewData["Title"] = "Editar comentario";
+}
+
+<h1>Editar comentario</h1>
+<p class="text-muted">
+    Tutorial: <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@Model.idtutorial">@Model.Tutorial?.Titulo</a>
+</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-controller="Comentario" asp-action="Editar" asp-route-id="@Model.Idcomentario" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label for="contenido" class="form-label">Contenido</label>
+                <textarea name="contenido" class="form-control" rows="4" maxlength="1000" required>@Model.Contenido</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a asp-controller="Comentario" asp-action="Index" asp-route-idTutorial="@Model.idtutorial" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

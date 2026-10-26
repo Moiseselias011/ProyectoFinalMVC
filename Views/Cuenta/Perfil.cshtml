@@ -1,0 +1,64 @@
+@model ProyectoFinalMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<h1>Mi perfil</h1>
+<hr />
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeExito"]</div>
+}
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger">@TempData["MensajeError"]</div>
+}
+
+<div class="row">
+    <div class="col-md-4 text-center">
+        @if (!string.IsNullOrEmpty(Model.RutaFoto))
+        {
+            <img src="@Model.RutaFoto" alt="Foto de perfil" class="rounded-circle img-fluid" style="max-width: 160px;" />
+        }
+        else
+        {
+            <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 160px; height: 160px; font-size: 3rem;">
+                @Model.NombreUsuario.Substring(0, 1).ToUpper()
+            </div>
+        }
+
+        <form asp-controller="Cuenta" asp-action="CambiarFoto" method="post" enctype="multipart/form-data" class="mt-3">
+            <div class="mb-2">
+                <input type="file" class="form-control" name="archivoFoto" accept=".jpg,.jpeg,.png,.gif" required />
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Cambiar foto</button>
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.RutaFoto))
+        {
+            <form asp-controller="Cuenta" asp-action="QuitarFoto" method="post" class="mt-2">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Quitar foto</button>
+            </form>
+        }
+    </div>
+
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-4">Nombre de usuario</dt>
+            <dd class="col-sm-8">@Model.NombreUsuario</dd>
+
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Model.Email</dd>
+
+            <dt class="col-sm-4">Rol</dt>
+            <dd class="col-sm-8">@Model.Rol</dd>
+
+            <dt class="col-sm-4">Fecha de registro</dt>
+            <dd class="col-sm-8">@Model.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy")</dd>
+        </dl>
+
+        <a asp-controller="Cuenta" asp-action="EditarPerfil" class="btn btn-primary">Editar perfil</a>
+        <a asp-controller="Cuenta" asp-action="CambiarContrasena" class="btn btn-outline-secondary">Cambiar contraseña</a>
+    </div>
+</div>

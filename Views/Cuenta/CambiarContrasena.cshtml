@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Cambiar contraseña";
+}
+
+<h1>Cambiar contraseña</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form asp-controller="Cuenta" asp-action="CambiarContrasena" method="post">
+            <div class="mb-3">
+                <label for="ContrasenaActual" class="form-label">Contraseña actual</label>
+                <input type="password" class="form-control" id="ContrasenaActual" name="ContrasenaActual" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="NuevaContrasena" class="form-label">Nueva contraseña</label>
+                <input type="password" class="form-control" id="NuevaContrasena" name="NuevaContrasena" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="ConfirmarNuevaContrasena" class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" class="form-control" id="ConfirmarNuevaContrasena" name="ConfirmarNuevaContrasena" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+            <a asp-controller="Cuenta" asp-action="Perfil" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
