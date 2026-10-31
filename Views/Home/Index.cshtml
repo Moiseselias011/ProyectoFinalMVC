@@ -1,8 +1,128 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<ProyectoFinalMVC.Models.Tutorial>
+@{
+    ViewData["Title"] = "Inicio";
+    var tecnologias = (IEnumerable<ProyectoFinalMVC.Models.Tecnologia>?)ViewBag.Tecnologias;
+    string? buscar = (string?)ViewBag.Buscar;
+    int? tecnologiaSeleccionada = (int?)ViewBag.TecnologiaId;
+    int totalResultados = (int)ViewBag.TotalResultados;
+    bool hayFiltro = !string.IsNullOrWhiteSpace(buscar) || (tecnologiaSeleccionada.HasValue && tecnologiaSeleccionada.Value > 0);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">Tutoriales de programación</h1>
+    <p class="lead">Comparte, comenta y guarda tus tutoriales favoritos.</p>
 </div>
+
+@* BUSCADOR: barra de búsqueda + combobox de tecnologías *@
+<form asp-controller="Home" asp-action="Index" method="get" class="mb-4">
+    <div class="row g-2 justify-content-center">
+        <div class="col-sm-7 col-md-5">
+            <input type="search"
+                   class="form-control"
+                   id="buscar"
+                   name="buscar"
+                   value="@buscar"
+                   placeholder="Buscar por título o descripción..." />
+        </div>
+        <div class="col-sm-5 col-md-3">
+            <select class="form-select" id="tecnologiaId" name="tecnologiaId">
+                <option value="">Todas las tecnologías</option>
+                @if (tecnologias != null)
+                {
+                    foreach (var tecnologia in tecnologias)
+                    {
+                        if (tecnologia.IdTecnologia == tecnologiaSeleccionada)
+                        {
+                            <option value="@tecnologia.IdTecnologia" selected>@tecnologia.Nombre</option>
+                        }
+                        else
+                        {
+                            <option value="@tecnologia.IdTecnologia">@tecnologia.Nombre</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+
+    @if (hayFiltro)
+    {
+        <div class="text-center mt-2">
+            <small class="text-muted">
+                @totalResultados resultado(s)
+                @if (!string.IsNullOrWhiteSpace(buscar))
+                {
+                    <span>para "@buscar"</span>
+                }
+            </small>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-link btn-sm">Limpiar filtros</a>
+        </div>
+    }
+</form>
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeExito"]</div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>@(hayFiltro ? "Resultados" : "Últimos tutoriales")</h3>
+    <a asp-controller="Tutorial" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver todos</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        @(hayFiltro ? "No se encontraron tutoriales con esos filtros." : "Todavía no hay tutoriales publicados. ¡Sé el primero en publicar uno!")
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var tutorial in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(tutorial.UrlImagen))
+                    {
+                        <img src="@tutorial.UrlImagen" class="card-img-top" alt="@tutorial.Titulo" style="max-height: 180px; object-fit: cover;" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@tutorial.Titulo</h5>
+                        <p class="card-text text-muted">@tutorial.Descripcion</p>
+                        <p class="mb-1">
+                            <span class="badge bg-secondary">@tutorial.Tecnologia?.Nombre</span>
+                            <span class="badge bg-info text-dark">@tutorial.Likes.Count Me gusta</span>
+                        </p>
+                        <small class="text-muted">
+                            Por @tutorial.Usuario?.NombreUsuario · @tutorial.FechaPublicacion.ToLocalTime().ToString("dd/MM/yyyy")
+                        </small>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a asp-controller="Tutorial" asp-action="Detalle" asp-route-id="@tutorial.Idtutorial" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* PAGINACIÓN (conserva los filtros activos) *@
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       asp-route-pagina="@i"
+                       asp-route-buscar="@buscar"
+                       asp-route-tecnologiaId="@tecnologiaSeleccionada">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

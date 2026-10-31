@@ -10,7 +10,7 @@ namespace ProyectoFinalMVC
         {
         }
 
-        //  nombres singulares y plurales para compatibilidad
+        
         public DbSet<Usuario> Usuario => Set<Usuario>();
         public DbSet<Usuario> Usuarios => Set<Usuario>();
 

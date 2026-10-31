@@ -3,11 +3,9 @@ using ProyectoFinalMVC.Models;
 
 namespace ProyectoFinalMVC;
 
-// Carga inicial de la base de datos.
 public static class DatosIniciales
 {
-    // Lista fija de tecnologías: la aplicación solo permite elegir entre estas,
-    // no se pueden crear, editar ni eliminar desde la interfaz.
+    
     public static readonly (string Nombre, string Slug)[] Tecnologias = new[]
     {
         ("C#", "csharp"),

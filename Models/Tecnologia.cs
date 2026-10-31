@@ -26,6 +26,5 @@ public static class Domains
 
     public const string PorDefecto = Programacion;
 
-    public static bool EsValido(string dominio) => dominio == Programacion;
-       
+    
 }
