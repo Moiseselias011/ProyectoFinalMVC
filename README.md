@@ -63,7 +63,7 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 ### 3. Manejo de archivos (extra)
 
-
+![Subida y gestión de archivos adjuntos](docs/evidencias/2.jpeg)
 
 
 ### 4. ABM en Vue.js + AJAX
