@@ -1,6 +1,11 @@
 @model ProyectoFinalMVC.Models.Tutorial
 @{
     ViewData["Title"] = Model.Titulo;
+    var usuarioId = (int?)ViewBag.UsuarioId;
+    var leGusta = (bool)ViewBag.LeGusta;
+    bool estaAutenticado = User.Identity?.IsAuthenticated == true;
+    bool esAutorOAdmin = estaAutenticado &&
+        (usuarioId == Model.Idusuario || User.IsInRole(Roles.Administrador));
 }
 
 <h1>@Model.Titulo</h1>
@@ -13,7 +18,7 @@
 
 <p>
     <span class="badge bg-secondary">@Model.Tecnologia?.Nombre</span>
-    <span class="badge bg-info text-dark">@ViewBag.TotalLikes Me gusta</span>
+    <span class="badge bg-info text-dark" data-total-likes-tutorial>@ViewBag.TotalLikes Me gusta</span>
     <span class="badge bg-light text-dark border">Publicado @Model.FechaPublicacion.ToLocalTime().ToString("dd/MM/yyyy")</span>
     <span class="badge bg-light text-dark border">Por @Model.Usuario?.NombreUsuario</span>
 </p>
@@ -30,24 +35,19 @@
     }
 </div>
 
-@* ACCIONES: LIKE, GUARDAR Y EDITAR/ELIMINAR *@
 <div class="border rounded p-3 mb-4">
-    @if (User.Identity?.IsAuthenticated == true)
+    @if (estaAutenticado)
     {
         <div class="d-flex flex-wrap gap-2 align-items-center">
-            @if (ViewBag.LeGusta)
+            @if (leGusta)
             {
-                <form asp-controller="Like" asp-action="Eliminar" method="post">
-                    <input type="hidden" name="tutorialId" value="@Model.Idtutorial" />
-                    <button type="submit" class="btn btn-outline-danger">Quitar Me gusta</button>
-                </form>
+                <button type="button" id="btn-like-tutorial" data-like-tutorial="@Model.Idtutorial"
+                        data-le-gusta="true" class="btn btn-danger">Ya no me gusta</button>
             }
             else
             {
-                <form asp-controller="Like" asp-action="Crear" method="post">
-                    <input type="hidden" name="tutorialId" value="@Model.Idtutorial" />
-                    <button type="submit" class="btn btn-outline-primary">Me gusta</button>
-                </form>
+                <button type="button" id="btn-like-tutorial" data-like-tutorial="@Model.Idtutorial"
+                        data-le-gusta="false" class="btn btn-outline-primary">Me gusta</button>
             }
 
             @if (ViewBag.ListasPropias != null && ((IEnumerable<ProyectoFinalMVC.Models.ListaPersonal>)ViewBag.ListasPropias).Any())
@@ -69,7 +69,7 @@
                 <a asp-controller="ListaPersonal" asp-action="Crear" class="btn btn-sm btn-outline-success">Crear una lista para guardarlo</a>
             }
 
-            @if (User.Identity?.Name == Model.Usuario?.NombreUsuario || User.IsInRole("Administrador"))
+            @if (esAutorOAdmin)
             {
                 <a asp-controller="Tutorial" asp-action="Editar" asp-route-id="@Model.Idtutorial" class="btn btn-sm btn-outline-secondary">Editar</a>
                 <a asp-controller="Tutorial" asp-action="Eliminar" asp-route-id="@Model.Idtutorial" class="btn btn-sm btn-outline-danger">Eliminar</a>
@@ -84,8 +84,180 @@
     }
 </div>
 
-@* COMENTARIOS *@
-<h3>Comentarios</h3>
-<a asp-controller="Comentario" asp-action="Index" asp-route-idTutorial="@Model.Idtutorial" class="btn btn-outline-primary btn-sm">
-    Ver y agregar comentarios (@Model.Comentarios.Count)
-</a>
+<h3>Comentarios en tiempo real (Vue.js)</h3>
+<div id="app-comentarios"
+     data-tutorial-id="@Model.Idtutorial"
+     data-autenticado="@estaAutenticado.ToString().ToLower()"
+     data-usuario-id="@(usuarioId?.ToString() ?? "0")"
+     data-es-admin="@User.IsInRole(Roles.Administrador).ToString().ToLower()"></div>
+
+<p class="text-muted small">
+    También puedes <a asp-controller="Comentario" asp-action="Index" asp-route-idTutorial="@Model.Idtutorial">ver y agregar comentarios</a> en la página de comentarios clásica.
+</p>
+
+<h3 class="mt-4">Archivos adjuntos</h3>
+<div id="seccion-archivos"
+     data-tutorial-id="@Model.Idtutorial"
+     data-autenticado="@estaAutenticado.ToString().ToLower()"
+     data-usuario-id="@(usuarioId?.ToString() ?? "0")"
+     data-es-propietario="@esAutorOAdmin.ToString().ToLower()"
+     class="border rounded p-3 mb-4">
+
+    @if (esAutorOAdmin)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Subir un archivo</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <input type="file" id="archivoEntrada" class="form-control" style="max-width: 320px;" />
+                    <button type="button" id="btn-subir-archivo" class="btn btn-sm btn-primary">Subir archivo</button>
+                </div>
+                <small class="text-muted">Extensiones: .jpg, .jpeg, .png, .gif, .pdf, .zip, .doc, .docx · Máximo 5 MB.</small>
+            </div>
+        </div>
+    }
+
+    <div id="lista-archivos">
+        <p class="text-muted mb-0">Cargando archivos...</p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/vue/vue.global.prod.js"></script>
+    <script src="~/scripts/ComentariosVue.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const seccion = document.getElementById('seccion-archivos');
+            if (!seccion) return;
+
+            const idTutorial = parseInt(seccion.getAttribute('data-tutorial-id'), 10) || 0;
+            const autenticado = seccion.getAttribute('data-autenticado') === 'true';
+            const usuarioActual = parseInt(seccion.getAttribute('data-usuario-id'), 10) || 0;
+            const esPropietario = seccion.getAttribute('data-es-propietario') === 'true';
+            const lista = document.getElementById('lista-archivos');
+            const entrada = document.getElementById('archivoEntrada');
+            const btnSubir = document.getElementById('btn-subir-archivo');
+
+            function alerta(tipo, texto) {
+                const previa = seccion.querySelector('.alert');
+                if (previa) previa.remove();
+                const div = document.createElement('div');
+                div.className = 'alert alert-' + tipo + ' alert-dismissible';
+                div.role = 'alert';
+                div.innerHTML = texto +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                seccion.prepend(div);
+                window.setTimeout(function () { div.remove(); }, 5000);
+            }
+
+            function mensajeDeError(respuesta, porDefecto) {
+                return respuesta.json()
+                    .then(function (datos) {
+                        return (datos && (datos.error || datos.mensaje)) ? (datos.error || datos.mensaje) : porDefecto;
+                    })
+                    .catch(function () { return porDefecto; });
+            }
+
+            function formatearTamano(bytes) {
+                if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+
+            function dibujarArchivos(archivos) {
+                lista.innerHTML = '';
+                if (!archivos || archivos.length === 0) {
+                    lista.innerHTML = '<p class="text-muted mb-0">Este tutorial todavía no tiene archivos adjuntos.</p>';
+                    return;
+                }
+
+                archivos.forEach(function (archivo) {
+                    const fila = document.createElement('div');
+                    fila.className = 'd-flex flex-wrap justify-content-between align-items-center border-bottom py-2';
+                    fila.innerHTML = '<div><strong></strong><br><small class="text-muted"></small></div>';
+
+                    fila.querySelector('strong').textContent = archivo.nombreArchivo;
+                    fila.querySelector('small').textContent =
+                        formatearTamano(archivo['tama\u00f1oBytes']) + ' · ' +
+                        new Date(archivo.fechaCarga).toLocaleString();
+
+                    const acciones = document.createElement('div');
+                    const linkDescarga = document.createElement('a');
+                    linkDescarga.className = 'btn btn-sm btn-outline-primary';
+                    linkDescarga.href = '/api/archivos/descargar/' + archivo.idArchivoTutorial;
+                    linkDescarga.textContent = 'Descargar';
+                    acciones.appendChild(linkDescarga);
+
+                    if (esPropietario) {
+                        const btnEliminar = document.createElement('button');
+                        btnEliminar.type = 'button';
+                        btnEliminar.className = 'btn btn-sm btn-outline-danger ms-1';
+                        btnEliminar.textContent = 'Eliminar';
+                        btnEliminar.addEventListener('click', function () {
+                            if (!window.confirm('¿Eliminar el archivo "' + archivo.nombreArchivo + '"?')) return;
+                            fetch('/api/archivos/eliminar/' + archivo.idArchivoTutorial, { method: 'POST' })
+                                .then(function (respuesta) {
+                                    if (!respuesta.ok) return mensajeDeError(respuesta, 'No se pudo eliminar el archivo.');
+                                    alerta('success', 'Archivo eliminado.');
+                                    listarArchivos();
+                                })
+                                .catch(function (error) {
+                                    console.error('Archivos:', error);
+                                    alerta('danger', error.message);
+                                });
+                        });
+                        acciones.appendChild(btnEliminar);
+                    }
+
+                    fila.appendChild(acciones);
+                    lista.appendChild(fila);
+                });
+            }
+
+            function listarArchivos() {
+                fetch('/api/archivos/listar/' + idTutorial)
+                    .then(function (respuesta) {
+                        if (!respuesta.ok) return respuesta.json().then(function () { throw new Error('No se pudieron listar los archivos.'); });
+                        return respuesta.json();
+                    })
+                    .then(dibujarArchivos)
+                    .catch(function (error) {
+                        console.error('Archivos:', error);
+                        lista.innerHTML = '<p class="text-danger mb-0">No se pudieron cargar los archivos adjuntos.</p>';
+                    });
+            }
+
+            if (btnSubir) {
+                btnSubir.addEventListener('click', function () {
+                    if (!entrada || !entrada.files || entrada.files.length === 0) {
+                        alerta('danger', 'Selecciona un archivo primero.');
+                        return;
+                    }
+                    const datosForm = new FormData();
+                    datosForm.append('archivo', entrada.files[0]);
+
+                    btnSubir.disabled = true;
+                    fetch('/api/archivos/subir?idTutorial=' + idTutorial, {
+                        method: 'POST',
+                        body: datosForm
+                    })
+                        .then(function (respuesta) {
+                            btnSubir.disabled = false;
+                            if (!respuesta.ok) return mensajeDeError(respuesta, 'No se pudo subir el archivo.');
+                            entrada.value = '';
+                            alerta('success', 'Archivo subido correctamente.');
+                            listarArchivos();
+                        })
+                        .catch(function (error) {
+                            btnSubir.disabled = false;
+                            console.error('Archivos:', error);
+                            alerta('danger', error.message);
+                        });
+                });
+            }
+
+            listarArchivos();
+        });
+    </script>
+}

@@ -10,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler =
+        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
 
 builder.Services.AddDbContext<ProyectoFinalMVCContext>(options =>
@@ -37,6 +42,7 @@ builder.Services.AddScoped<IComentariosServicio, ComentariosServicio>();
 builder.Services.AddScoped<ILikesServicio, LikesServicio>();
 builder.Services.AddScoped<IListasServicio, ListasServicio>();
 builder.Services.AddScoped<ITutorialGuardadoServicio, TutorialGuardadoServicio>();
+builder.Services.AddScoped<IArchivoTutorialServicio, ArchivoTutorialServicio>();
 
 var app = builder.Build();
 

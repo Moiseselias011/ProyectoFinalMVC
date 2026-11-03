@@ -33,6 +33,8 @@ namespace ProyectoFinalMVC.Models;
         public ICollection<Comentario> Comentarios {get;set;} = new List<Comentario>();
         public ICollection<Like> Likes {get;set;} = new List<Like>();
 
-        public ICollection<TutorialGuardado> TutorialesGuardados{get;set;} = new List<TutorialGuardado>();  
+        public ICollection<TutorialGuardado> TutorialesGuardados{get;set;} = new List<TutorialGuardado>();
+
+        public ICollection<ArchivoTutorial> Archivos {get;set;} = new List<ArchivoTutorial>();
 
     }

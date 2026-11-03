@@ -11,15 +11,20 @@ namespace ProyectoFinalMVC
     public class TutorialController : Controller
     {
         private readonly ProyectoFinalMVCContext _context;
-       // private readonly ITutorialesService _tutorialesService;
 
-        /*public TutorialController(
-            ProyectoFinalMVCContext context,
-            ITutorialesService tutorialesService)
+        public TutorialController(ProyectoFinalMVCContext context)
         {
             _context = context;
-            _tutorialesService = tutorialesService;
-        }*/
+        }
+
+        private int? ObtenerUsuarioId()
+        {
+            string? valorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return int.TryParse(valorId, out int usuarioId)
+                ? usuarioId
+                : null;
+        }
 
         // 1. LISTAR TUTORIALES (Index)
 
@@ -91,6 +96,20 @@ namespace ProyectoFinalMVC
             if (tutorial == null)
             {
                 return NotFound();
+            }
+
+            int? usuarioId = ObtenerUsuarioId();
+
+            ViewBag.UsuarioId = usuarioId;
+            ViewBag.TotalLikes = tutorial.Likes.Count;
+            ViewBag.LeGusta = usuarioId is not null &&
+                tutorial.Likes.Any(l => l.UsuarioId == usuarioId.Value);
+
+            if (usuarioId is not null)
+            {
+                ViewBag.ListasPropias = await _context.ListaPersonal
+                    .Where(l => l.DueñoId == usuarioId.Value)
+                    .ToListAsync();
             }
 
             return View(tutorial);

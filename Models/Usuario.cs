@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ProyectoFinalMVC.Models;
 
@@ -15,6 +16,7 @@ namespace ProyectoFinalMVC.Models;
        public string Email{get;set;}= string.Empty;
 
        [Required]
+       [JsonIgnore]
        public string HashContrasena{get;set;} = string.Empty;
 
        [Required, MaxLength(100)]

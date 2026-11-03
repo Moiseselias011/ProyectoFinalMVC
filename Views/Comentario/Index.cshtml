@@ -16,7 +16,6 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-@* FORMULARIO PARA AGREGAR UN COMENTARIO NUEVO *@
 @if (User.Identity?.IsAuthenticated == true)
 {
     <div class="card mb-4">
@@ -54,20 +53,18 @@ else
             <p class="mt-2 mb-2">@comentario.Contenido</p>
 
             <div class="d-flex gap-2 align-items-center flex-wrap">
-                <small class="text-muted">@comentario.Likes.Count Me gusta</small>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <button type="button" class="btn btn-sm"
+                            data-like-comentario="@comentario.Idcomentario"
+                            data-le-gusta="@comentario.Likes.Any(l => l.UsuarioId == usuarioId)">
+                        Me gusta
+                    </button>
+                }
+                <span class="text-muted" data-total-likes-comentario="@comentario.Idcomentario">@comentario.Likes.Count Me gusta</span>
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <form asp-controller="LikeDeComentario" asp-action="Crear" method="post" class="d-inline">
-                        <input type="hidden" name="comentarioId" value="@comentario.Idcomentario" />
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Me gusta</button>
-                    </form>
-
-                    <form asp-controller="LikeDeComentario" asp-action="Eliminar" method="post" class="d-inline">
-                        <input type="hidden" name="comentarioId" value="@comentario.Idcomentario" />
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Quitar like</button>
-                    </form>
-
                     <button type="button" class="btn btn-sm btn-outline-success" onclick="document.getElementById('respuesta-@comentario.Idcomentario').classList.toggle('d-none')">Responder</button>
 
                     @if (usuarioId == comentario.Idusuario)
@@ -82,7 +79,6 @@ else
                 }
             </div>
 
-            @* FORMULARIO PARA RESPONDER *@
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <div id="respuesta-@comentario.Idcomentario" class="d-none mt-3">
@@ -95,7 +91,6 @@ else
                 </div>
             }
 
-            @* RESPUESTAS *@
             @foreach (var respuesta in comentario.Respuestas.OrderByDescending(r => r.FechaCreacion))
             {
                 <div class="border-start ps-3 mt-3">
@@ -104,7 +99,18 @@ else
                         <small class="text-muted">@respuesta.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
                     </div>
                     <p class="mt-1 mb-1">@respuesta.Contenido</p>
-                    <small class="text-muted">@respuesta.Likes.Count Me gusta</small>
+
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <button type="button" class="btn btn-sm"
+                                    data-like-comentario="@respuesta.Idcomentario"
+                                    data-le-gusta="@respuesta.Likes.Any(l => l.UsuarioId == usuarioId)">
+                                Me gusta
+                            </button>
+                        }
+                        <span class="text-muted" data-total-likes-comentario="@respuesta.Idcomentario">@respuesta.Likes.Count Me gusta</span>
+                    </div>
 
                     @if (User.Identity?.IsAuthenticated == true && (usuarioId == respuesta.Idusuario || User.IsInRole("Administrador")))
                     {
@@ -118,7 +124,6 @@ else
         </div>
     }
 
-    @* PAGINACIÓN *@
     <nav>
         <ul class="pagination">
             @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)

@@ -76,6 +76,7 @@ public class ComentarioController : Controller
         ViewBag.Pagina = pagina;
         ViewBag.TotalPaginas = totalPaginas;
         ViewBag.TotalElementos = totalElementos;
+        ViewBag.UsuarioId = ObtenerUsuarioId();
 
         return View(comentarios);
     }

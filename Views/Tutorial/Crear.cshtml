@@ -32,11 +32,108 @@
 
             <div class="mb-3">
                 <label asp-for="TecnologiaId" class="form-label">Tecnología</label>
-                <select asp-for="TecnologiaId" class="form-select" asp-items="ViewBag.Tecnologias" required>
-                    <option value="">-- Selecciona una tecnología --</option>
-                </select>
+                <div class="input-group" style="position: relative;">
+                    <input type="text" id="tecnologiaBusqueda" class="form-control" autocomplete="off"
+                           placeholder="Selecciona de la lista o escribe para filtrar..." />
+                    <input type="hidden" id="tecnologiaIdSeleccionada" name="TecnologiaId" required />
+                </div>
                 <span asp-validation-for="TecnologiaId" class="text-danger"></span>
+                <small class="text-muted">Al enfocar el campo se muestra la lista completa; escribe para filtrar.</small>
             </div>
+
+            <script>
+                const inputBusqueda = document.getElementById('tecnologiaBusqueda');
+                const inputOculto = document.getElementById('tecnologiaIdSeleccionada');
+
+                function seleccionarTecnologia(opcion) {
+                    inputOculto.value = opcion.dataset.id;
+                    inputBusqueda.value = opcion.textContent;
+                    cerrarMenu();
+                }
+
+                function cerrarMenu() {
+                    inputBusqueda.parentElement.querySelectorAll('.search-results').forEach(el => el.remove());
+                }
+
+                function pintarMenu(datos) {
+                    const contenedor = document.createElement('div');
+                    contenedor.className = 'search-results';
+                    contenedor.style = 'position: absolute; left: 0; right: 0; margin-top: 2px; border: 1px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; background: white;';
+
+                    if (!datos || datos.length === 0) {
+                        const vacio = document.createElement('div');
+                        vacio.style = 'padding: 5px; color: #6c757d;';
+                        vacio.textContent = 'No se encontró esa tecnología.';
+                        contenedor.appendChild(vacio);
+                    } else {
+                        datos.forEach(t => {
+                            const opcion = document.createElement('div');
+                            opcion.style = 'padding: 5px; cursor: pointer; background: #f8f9fa;';
+                            opcion.textContent = t.nombre;
+                            opcion.dataset.id = t.idTecnologia;
+                            contenedor.appendChild(opcion);
+                        });
+                    }
+
+                    cerrarMenu();
+                    inputBusqueda.parentElement.appendChild(contenedor);
+                }
+
+                async function mostrarListaCompleta() {
+                    try {
+                        const respuesta = await fetch('/api/tecnologias');
+                        const datos = await respuesta.json();
+                        if (!respuesta.ok) return;
+                        pintarMenu(datos);
+                    } catch (error) {
+                        console.error('Error al cargar tecnologías:', error);
+                    }
+                }
+
+                inputBusqueda.addEventListener('focus', function () {
+                    mostrarListaCompleta();
+                });
+
+                inputBusqueda.addEventListener('input', async function () {
+                    inputOculto.value = '';
+                    const termino = this.value.trim();
+
+                    if (termino.length < 2) {
+                        mostrarListaCompleta();
+                        return;
+                    }
+
+                    try {
+                        const respuesta = await fetch(`/api/tecnologias/buscar?termino=${encodeURIComponent(termino)}`);
+                        const datos = await respuesta.json();
+                        if (!respuesta.ok) return;
+
+                        if (inputBusqueda.value.trim() !== termino) return;
+
+                        pintarMenu(datos);
+                    } catch (error) {
+                        console.error('Error en búsqueda:', error);
+                    }
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (e.target.dataset && e.target.dataset.id && e.target.closest('.search-results')) {
+                        seleccionarTecnologia(e.target);
+                        return;
+                    }
+                    if (!e.target.closest('.input-group')) {
+                        cerrarMenu();
+                    }
+                });
+
+                document.getElementById('tecnologiaIdSeleccionada').closest('form').addEventListener('submit', function (e) {
+                    if (inputOculto.value === '') {
+                        e.preventDefault();
+                        inputBusqueda.style.borderColor = '#dc3545';
+                        inputBusqueda.focus();
+                    }
+                });
+            </script>
 
             <button type="submit" class="btn btn-primary">Publicar</button>
             <a asp-controller="Tutorial" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>

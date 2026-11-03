@@ -36,6 +36,9 @@ namespace ProyectoFinalMVC
         public DbSet<TutorialGuardado> TutorialGuardado => Set<TutorialGuardado>();
         public DbSet<TutorialGuardado> TutorialesGuardados => Set<TutorialGuardado>();
 
+        public DbSet<ArchivoTutorial> ArchivoTutorial => Set<ArchivoTutorial>();
+        public DbSet<ArchivoTutorial> ArchivosTutorial => Set<ArchivoTutorial>();
+
         protected override void OnModelCreating(ModelBuilder mb)
         {
             base.OnModelCreating(mb);
@@ -172,6 +175,12 @@ namespace ProyectoFinalMVC
                 .HasOne(tg => tg.Tutorial)
                 .WithMany(t => t.TutorialesGuardados)
                 .HasForeignKey(tg => tg.TutorialId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            mb.Entity<ArchivoTutorial>()
+                .HasOne(a => a.Tutorial)
+                .WithMany(t => t.Archivos)
+                .HasForeignKey(a => a.IdTutorial)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
