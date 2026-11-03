@@ -48,7 +48,9 @@ La estructura de la base de datos se administra mediante migraciones de Entity F
 Esta sección presenta el cumplimiento de los requerimientos solicitados, junto con referencias al código fuente y evidencias visuales del funcionamiento de la aplicación.
 
 ### 1. Cuatro tablas y relación 1:N
+**Estado:**  Cumplido
 
+**Código:** [ProyectoFinalMVCContext.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Data/ProyectoFinalMVCContext.cs)
 
 
 ![Diagrama entidad-relación](docs/diagrama.jpg)
