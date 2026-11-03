@@ -10,4 +10,7 @@ public interface ITecnologiasServicio
 
    
     Task<Tecnologia?> ObtenerPorIdOSlugAsync(string idOrSlug);
+
+    
+    Task<List<Tecnologia>> BuscarPorNombreAsync(string termino);
 }

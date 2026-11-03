@@ -41,9 +41,54 @@
                 <small class="text-muted">Al enfocar el campo se muestra la lista completa; escribe para filtrar.</small>
             </div>
 
-            <script>
+            <style>
+    .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        margin-top: 2px;
+        background: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .075);
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 1050;
+    }
+
+    .search-results.menu-con-error {
+        border-color: #dc3545;
+    }
+
+    .search-results .opcion-tecnologia {
+        background: #ffffff;
+        padding: .45rem .75rem;
+        cursor: pointer;
+    }
+
+    .search-results .opcion-tecnologia:hover {
+        background: #f1f3f5;
+    }
+
+    .search-results .mensaje-vacio {
+        padding: .45rem .75rem;
+        color: #6c757d;
+    }
+
+    .search-results .mensaje-error {
+        padding: .45rem .75rem;
+        color: #dc3545;
+    }
+</style>
+
+<script>
                 const inputBusqueda = document.getElementById('tecnologiaBusqueda');
                 const inputOculto = document.getElementById('tecnologiaIdSeleccionada');
+                const RETRASO_MS = 250;
+
+                let temporizadorBusqueda = null;
+                let peticionActual = null;
 
                 function seleccionarTecnologia(opcion) {
                     inputOculto.value = opcion.dataset.id;
@@ -58,17 +103,16 @@
                 function pintarMenu(datos) {
                     const contenedor = document.createElement('div');
                     contenedor.className = 'search-results';
-                    contenedor.style = 'position: absolute; left: 0; right: 0; margin-top: 2px; border: 1px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; background: white;';
 
                     if (!datos || datos.length === 0) {
                         const vacio = document.createElement('div');
-                        vacio.style = 'padding: 5px; color: #6c757d;';
-                        vacio.textContent = 'No se encontró esa tecnología.';
+                        vacio.className = 'mensaje-vacio';
+                        vacio.textContent = 'No hay tecnologías que coincidan con la búsqueda.';
                         contenedor.appendChild(vacio);
                     } else {
                         datos.forEach(t => {
                             const opcion = document.createElement('div');
-                            opcion.style = 'padding: 5px; cursor: pointer; background: #f8f9fa;';
+                            opcion.className = 'opcion-tecnologia';
                             opcion.textContent = t.nombre;
                             opcion.dataset.id = t.idTecnologia;
                             contenedor.appendChild(opcion);
@@ -79,41 +123,79 @@
                     inputBusqueda.parentElement.appendChild(contenedor);
                 }
 
-                async function mostrarListaCompleta() {
+                function pintarError(texto) {
+                    const contenedor = document.createElement('div');
+                    contenedor.className = 'search-results menu-con-error';
+                    const fallo = document.createElement('div');
+                    fallo.className = 'mensaje-error';
+                    fallo.textContent = texto;
+                    contenedor.appendChild(fallo);
+                    cerrarMenu();
+                    inputBusqueda.parentElement.appendChild(contenedor);
+                }
+
+                function cancelarPeticion() {
+                    if (peticionActual) {
+                        peticionActual.abort();
+                        peticionActual = null;
+                    }
+                    if (temporizadorBusqueda) {
+                        clearTimeout(temporizadorBusqueda);
+                        temporizadorBusqueda = null;
+                    }
+                }
+
+                async function pedirAlServidor(url) {
+                    cancelarPeticion();
+                    peticionActual = new AbortController();
+
                     try {
-                        const respuesta = await fetch('/api/tecnologias');
+                        const respuesta = await fetch(url, { signal: peticionActual.signal });
                         const datos = await respuesta.json();
-                        if (!respuesta.ok) return;
+
+                        if (!respuesta.ok) {
+                            pintarError('No se pudieron cargar las tecnologías. Intenta de nuevo.');
+                            return;
+                        }
+
                         pintarMenu(datos);
                     } catch (error) {
-                        console.error('Error al cargar tecnologías:', error);
+                        if (error.name === 'AbortError') return;
+                        pintarError('No se pudo conectar con el servidor. Revisa tu conexión e intenta de nuevo.');
+                        console.error('Error de comunicación con el servidor:', error);
+                    } finally {
+                        if (peticionActual && peticionActual.signal.aborted === false) peticionActual = null;
+                    }
+                }
+
+                function mostrarListaCompleta() {
+                    pedirAlServidor('/api/tecnologias');
+                }
+
+                function abrirMenu() {
+                    if (!inputBusqueda.parentElement.querySelector('.search-results')) {
+                        mostrarListaCompleta();
                     }
                 }
 
                 inputBusqueda.addEventListener('focus', function () {
-                    mostrarListaCompleta();
+                    if (inputBusqueda.value.trim().length < 1) mostrarListaCompleta();
                 });
 
-                inputBusqueda.addEventListener('input', async function () {
+                inputBusqueda.addEventListener('click', abrirMenu);
+
+                inputBusqueda.addEventListener('input', function () {
                     inputOculto.value = '';
+                    cancelarPeticion();
                     const termino = this.value.trim();
 
-                    if (termino.length < 2) {
-                        mostrarListaCompleta();
-                        return;
-                    }
-
-                    try {
-                        const respuesta = await fetch(`/api/tecnologias/buscar?termino=${encodeURIComponent(termino)}`);
-                        const datos = await respuesta.json();
-                        if (!respuesta.ok) return;
-
-                        if (inputBusqueda.value.trim() !== termino) return;
-
-                        pintarMenu(datos);
-                    } catch (error) {
-                        console.error('Error en búsqueda:', error);
-                    }
+                    temporizadorBusqueda = setTimeout(function () {
+                        if (termino.length < 1) {
+                            mostrarListaCompleta();
+                            return;
+                        }
+                        pedirAlServidor(`/api/tecnologias/buscar?termino=${encodeURIComponent(termino)}`);
+                    }, RETRASO_MS);
                 });
 
                 document.addEventListener('click', function (e) {

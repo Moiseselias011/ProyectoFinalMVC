@@ -34,4 +34,18 @@ public class TecnologiasServicio : ITecnologiasServicio
                 (esId && t.IdTecnologia == idTecnologia) ||
                 (!esId && t.Slug == idOrSlug));
     }
+
+    public async Task<List<Tecnologia>> BuscarPorNombreAsync(string termino)
+    {
+        if (string.IsNullOrWhiteSpace(termino))
+        {
+            return new List<Tecnologia>();
+        }
+
+        return await _context.Tecnologia
+            .AsNoTracking()
+            .Where(t => EF.Functions.Like(t.Nombre, $"%{termino}%") || EF.Functions.Like(t.Slug, $"%{termino}%"))
+            .OrderBy(t => t.Nombre)
+            .ToListAsync();
+    }
 }

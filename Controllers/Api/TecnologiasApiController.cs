@@ -22,6 +22,18 @@ namespace ProyectoFinalMVC.Controllers.Api
             return Ok(await _tecnologias.ListarAsync());
         }
 
+        [HttpGet("buscar")]
+        public async Task<IActionResult> Buscar(string termino)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+            {
+                return Ok(new List<object>());
+            }
+
+            var tecnologias = await _tecnologias.BuscarPorNombreAsync(termino);
+            return Ok(tecnologias);
+        }
+
        
         [HttpGet("{idOrSlug}")]
         public async Task<IActionResult> Obtener(string idOrSlug)
