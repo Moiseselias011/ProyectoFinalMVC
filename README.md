@@ -84,7 +84,15 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 ![ABM dinámico de comentarios](docs/evidencias/3.jpeg)
 
 
-### 5. Paginado por servidor
+### 5. Paginado por Servidor
+
+**Estado:**  Cumplido
+
+**Código:** [TutorialController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/TutorialController.cs)
+
+**Evidencia:**
+
+![Paginación por servidor - página 2](docs/evidencias/4.jpeg)
 
 
 
