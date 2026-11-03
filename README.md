@@ -111,6 +111,26 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 ### 7. Web API + JWT
 
 
+**Estado:**  Cumplido
+
+**Implementación:**
+- Configuración de autenticación JWT Bearer.
+- Generación de tokens mediante HMAC-SHA256.
+- Protección de endpoints mediante `[Authorize]`.
+- Validación de identidad y roles.
+- Separación de autenticación MVC mediante cookies y API mediante JWT.
+
+**Archivos principales:**
+- [Program.cs](Program.cs)
+- [AuthApiController.cs](Controllers/Api/AuthApiController.cs)
+- [ITokensServicio.cs](Services/ITokensServicio.cs)
+- [TokensServicio.cs](Services/TokensServicio.cs)
+
+**Evidencias:**
+
+![TokensServicio.cs](docs/evidencias/6.jpeg)
+
+
 
 
 
