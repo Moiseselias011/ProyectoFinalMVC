@@ -56,7 +56,7 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 ### 2. Login, roles y avatar
 
-
+![Perfil de usuario con avatar](docs/evidencias/1.jpeg)
 
 
 
