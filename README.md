@@ -2,7 +2,7 @@
 
 ## Descripción
 
-### Aplicación web desarrollada para **centralizar y facilitar el acceso a tutoriales de programación y tecnología**. El sistema permite publicar, consultar y organizar contenido educativo, facilitando el aprendizaje y la interacción entre usuarios.
+Aplicación web desarrollada para **centralizar y facilitar el acceso a tutoriales de programación y tecnología**. El sistema permite publicar, consultar y organizar contenido educativo, facilitando el aprendizaje y la interacción entre usuarios.
 
 El proyecto fue desarrollado utilizando **ASP.NET Core MVC, C#, Entity Framework Core y SQL Server**.
 
@@ -41,6 +41,78 @@ La estructura de la base de datos se administra mediante migraciones de Entity F
 - HTML
 - CSS
 - JavaScript
+- Vue.js
+
+## Requisitos mínimos y evidencias
+
+Esta sección presenta el cumplimiento de los requerimientos solicitados, junto con referencias al código fuente y evidencias visuales del funcionamiento de la aplicación.
+
+### 1. Cuatro tablas y relación 1:N
+**Estado:**  Cumplido
+
+**Código:** [ProyectoFinalMVCContext.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Data/ProyectoFinalMVCContext.cs)
+
+
+![Diagrama entidad-relación](docs/diagrama.jpg)
+
+
+### 2. Login, roles y avatar
+**Estado:**  Cumplido
+
+**Código:** [CuentaController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/CuentaController.cs)
+
+![Perfil de usuario con avatar](docs/evidencias/1.jpeg)
+
+
+
+
+### 3. Manejo de archivos (extra)
+ **Estado:**  Cumplido
+[ArchivosTutorialesController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/ArchivosTutorialesController.cs)
+
+![Subida y gestión de archivos adjuntos](docs/evidencias/2.jpeg)
+
+
+### 4. ABM en Vue.js + AJAX
+
+**Estado:**  Cumplido
+
+**Código:** [ComentariosVue.js](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/wwwroot/scripts/ComentariosVue.js)
+
+**Evidencia:**
+
+![ABM dinámico de comentarios](docs/evidencias/3.jpeg)
+
+
+### 5. Paginado por Servidor
+
+**Estado:**  Cumplido
+
+**Código:** [TutorialController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/TutorialController.cs)
+
+**Evidencia:**
+
+![Paginación por servidor - página 2](docs/evidencias/4.jpg)
+
+
+
+
+### 6. Búsqueda Asíncrona de Tecnologías
+**Estado:** ✅ Cumplido
+
+**Código:** [TecnologiasApiController.cs](Controllers/Api/TecnologiasApiController.cs)
+
+**Evidencia:**
+![Búsqueda asíncrona de tecnologías](docs/evidencias/5.jpeg)
+
+
+
+
+### 7. Web API + JWT
+
+
+
+
 
 ## Integrantes
 
