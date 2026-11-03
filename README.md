@@ -75,7 +75,13 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 ### 4. ABM en Vue.js + AJAX
 
+**Estado:**  Cumplido
 
+**Código:** [ComentariosVue.js](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/wwwroot/scripts/ComentariosVue.js)
+
+**Evidencia:**
+
+![ABM dinámico de comentarios](docs/evidencias/3.jpeg)
 
 
 ### 5. Paginado por servidor
