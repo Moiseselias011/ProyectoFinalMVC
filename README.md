@@ -57,7 +57,7 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 
 ### 2. Login, roles y avatar
-**Estado:** ✅ Cumplido
+**Estado:**  Cumplido
 
 **Código:** [CuentaController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/CuentaController.cs)
 
@@ -67,6 +67,8 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 
 ### 3. Manejo de archivos (extra)
+ **Estado:**  Cumplido
+[ArchivosTutorialesController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/ArchivosTutorialesController.cs)
 
 ![Subida y gestión de archivos adjuntos](docs/evidencias/2.jpeg)
 
