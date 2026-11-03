@@ -92,7 +92,7 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 **Evidencia:**
 
-![Paginación por servidor - página 2](docs/evidencias/4.jpeg)
+![Paginación por servidor - página 2](docs/evidencias/4.jpg)
 
 
 
