@@ -57,6 +57,9 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 
 ### 2. Login, roles y avatar
+**Estado:** ✅ Cumplido
+
+**Código:** [CuentaController.cs](https://github.com/Moiseselias011/ProyectoFinalMVC/blob/main/Controllers/CuentaController.cs)
 
 ![Perfil de usuario con avatar](docs/evidencias/1.jpeg)
 
