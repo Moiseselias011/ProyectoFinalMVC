@@ -2,7 +2,7 @@
 
 ## Descripción
 
-### Aplicación web desarrollada para **centralizar y facilitar el acceso a tutoriales de programación y tecnología**. El sistema permite publicar, consultar y organizar contenido educativo, facilitando el aprendizaje y la interacción entre usuarios.
+Aplicación web desarrollada para **centralizar y facilitar el acceso a tutoriales de programación y tecnología**. El sistema permite publicar, consultar y organizar contenido educativo, facilitando el aprendizaje y la interacción entre usuarios.
 
 El proyecto fue desarrollado utilizando **ASP.NET Core MVC, C#, Entity Framework Core y SQL Server**.
 
@@ -41,6 +41,51 @@ La estructura de la base de datos se administra mediante migraciones de Entity F
 - HTML
 - CSS
 - JavaScript
+- Vue.js
+
+## Requisitos mínimos y evidencias
+
+Esta sección presenta el cumplimiento de los requerimientos solicitados, junto con referencias al código fuente y evidencias visuales del funcionamiento de la aplicación.
+
+### 1. Cuatro tablas y relación 1:N
+
+
+
+![Diagrama entidad-relación](docs/diagrama.jpg)
+
+
+### 2. Login, roles y avatar
+
+
+
+
+
+
+### 3. Manejo de archivos (extra)
+
+
+
+
+### 4. ABM en Vue.js + AJAX
+
+
+
+
+### 5. Paginado por servidor
+
+
+
+
+### 6. Selección asíncrona (AJAX)
+
+
+
+
+### 7. Web API + JWT
+
+
+
+
 
 ## Integrantes
 
