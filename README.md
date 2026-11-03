@@ -43,6 +43,9 @@ La estructura de la base de datos se administra mediante migraciones de Entity F
 - JavaScript
 - Vue.js
 
+  administrador : admin@tutoriales.com
+  contraseña : 123456
+
 ## Requisitos mínimos y evidencias
 
 Esta sección presenta el cumplimiento de los requerimientos solicitados, junto con referencias al código fuente y evidencias visuales del funcionamiento de la aplicación.
