@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoFinalMVC.Models;
+using ProyectoFinalMVC.Services;
 using BCrypt.Net;
 using System.Security.Claims; 
 using Microsoft.AspNetCore.Authentication; 
@@ -13,9 +14,11 @@ namespace ProyectoFinalMVC.Controllers
          //1. REGISTRO DE USUARIOS
 
         private readonly ProyectoFinalMVCContext _context;
-         public AuthController(ProyectoFinalMVCContext context)
+        private readonly ITokensServicio _tokens;
+         public AuthController(ProyectoFinalMVCContext context, ITokensServicio tokens)
         {
             _context = context;
+            _tokens = tokens;
         }
         
         [HttpGet]
@@ -127,6 +130,29 @@ namespace ProyectoFinalMVC.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }         
+
+
+        [HttpGet("/Auth/Token")]
+        public async Task<ActionResult> Token()
+        {
+            var valorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(valorId, out int idUsuario))
+            {
+                return Unauthorized();
+            }
+
+            var usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id_usuario == idUsuario);
+
+            if (usuario is null)
+            {
+                return Unauthorized();
+            }
+
+            var (token, expiracion) = _tokens.GenerarToken(usuario);
+
+            return Ok(new { Token = token, Expiracion = expiracion });
+        }
 
 
 

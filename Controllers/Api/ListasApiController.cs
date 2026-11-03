@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
@@ -8,7 +9,7 @@ namespace ProyectoFinalMVC.Controllers.Api
   
     [Route("api/listas")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ListasApiController : ControllerBase
     {
         private readonly IListasServicio _listas;

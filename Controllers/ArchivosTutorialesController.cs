@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
@@ -6,7 +7,7 @@ using System.Security.Claims;
 
 namespace ProyectoFinalMVC.Controllers;
 
-[Authorize]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/archivos")]
 [ApiController]
 public class ArchivosTutorialesController : ControllerBase
@@ -29,7 +30,7 @@ public class ArchivosTutorialesController : ControllerBase
     {
         var usuarioId = ObtenerUsuarioId();
         if (usuarioId is null)
-            return Challenge();
+            return Unauthorized();
 
         var resultado = await _archivoServicio.SubirAsync(idTutorial, usuarioId.Value, archivo, usuarioId.Value.ToString());
 
@@ -62,7 +63,7 @@ public class ArchivosTutorialesController : ControllerBase
     {
         var usuarioId = ObtenerUsuarioId();
         if (usuarioId is null)
-            return Challenge();
+            return Unauthorized();
 
         var resultado = await _archivoServicio.EliminarAsync(id, usuarioId.Value);
 

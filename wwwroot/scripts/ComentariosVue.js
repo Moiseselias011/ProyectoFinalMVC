@@ -174,6 +174,10 @@
                     }
                 }, 5000);
             },
+            async cabeceraAutorizacion() {
+                return window.TokenApi ? await window.TokenApi.cabeceraAutorizacion() : {};
+            },
+
             async errorDeRespuesta(respuesta, porDefecto) {
                 let mensaje = porDefecto;
                 try {
@@ -225,7 +229,8 @@
                 try {
                     const respuesta = await fetch('/api/comentarios', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: Object.assign({ 'Content-Type': 'application/json' }, await this.cabeceraAutorizacion()),
+                        credentials: 'omit',
                         body: JSON.stringify({ idTutorial: this.idTutorial, contenido: contenido })
                     });
                     if (!respuesta.ok) {
@@ -269,7 +274,8 @@
                 try {
                     const respuesta = await fetch(`/api/comentarios/${comentario.idcomentario}/responder`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: Object.assign({ 'Content-Type': 'application/json' }, await this.cabeceraAutorizacion()),
+                        credentials: 'omit',
                         body: JSON.stringify({
                             idTutorial: this.idTutorial,
                             contenido: contenido
@@ -311,7 +317,8 @@
                 try {
                     const respuesta = await fetch(`/api/comentarios/${this.editandoId}`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: Object.assign({ 'Content-Type': 'application/json' }, await this.cabeceraAutorizacion()),
+                        credentials: 'omit',
                         body: JSON.stringify({ contenido: contenido })
                     });
                     if (!respuesta.ok) {
@@ -335,7 +342,8 @@
                 try {
                     const respuesta = await fetch(`/api/comentarios/${comentario.idcomentario}`, {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: Object.assign({ 'Content-Type': 'application/json' }, await this.cabeceraAutorizacion()),
+                        credentials: 'omit'
                     });
                     if (!respuesta.ok) {
                         throw new Error(await this.errorDeRespuesta(respuesta, 'No se pudo eliminar el comentario.'));
@@ -355,7 +363,8 @@
                 try {
                     const respuesta = await fetch(`/api/likes/comentarios/${comentario.idcomentario}`, {
                         method: darLike ? 'POST' : 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: Object.assign({ 'Content-Type': 'application/json' }, await this.cabeceraAutorizacion()),
+                        credentials: 'omit'
                     });
                     if (!respuesta.ok) {
                         throw new Error(await this.errorDeRespuesta(respuesta, 'No se pudo actualizar el Me gusta.'));

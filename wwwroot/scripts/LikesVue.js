@@ -2,15 +2,19 @@
 (function () {
     'use strict';
 
-    function obtenerHeaders() {
+    async function obtenerHeaders() {
         const headers = { 'Content-Type': 'application/json' };
+        if (window.TokenApi) {
+            Object.assign(headers, await window.TokenApi.cabeceraAutorizacion());
+        }
         return headers;
     }
 
     async function llamarLike(url, darLike) {
         const respuesta = await fetch(url, {
             method: darLike ? 'POST' : 'DELETE',
-            headers: obtenerHeaders()
+            headers: await obtenerHeaders(),
+            credentials: 'omit'
         });
 
         let datos = null;

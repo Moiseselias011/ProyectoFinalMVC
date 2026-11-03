@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
@@ -50,7 +51,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
         
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] Tutorial tutorial)
         {
@@ -67,7 +68,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
        
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Editar(int id, [FromBody] Tutorial tutorial)
         {
@@ -91,7 +92,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
        
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

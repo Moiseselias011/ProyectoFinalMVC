@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
@@ -43,7 +44,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
        
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ComentarioRequest request)
         {
@@ -61,7 +62,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
        
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("{id}/responder")]
         public async Task<IActionResult> Responder(int id, [FromBody] ComentarioRequest request)
         {
@@ -80,7 +81,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
       
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Editar(int id, [FromBody] ContenidoRequest request)
         {
@@ -97,7 +98,7 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
        
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

@@ -159,6 +159,34 @@
                     .catch(function () { return porDefecto; });
             }
 
+            async function autorizacion() {
+                return window.TokenApi ? await window.TokenApi.cabeceraAutorizacion() : {};
+            }
+
+            async function descargarArchivo(archivo) {
+                try {
+                    const respuesta = await fetch('/api/archivos/descargar/' + archivo.idArchivoTutorial, {
+                        headers: await autorizacion(),
+                        credentials: 'omit'
+                    });
+                    if (!respuesta.ok) {
+                        alerta('danger', await mensajeDeError(respuesta, 'El archivo no está disponible.'));
+                        return;
+                    }
+                    const datos = await respuesta.blob();
+                    const enlace = document.createElement('a');
+                    enlace.href = URL.createObjectURL(datos);
+                    enlace.download = archivo.nombreArchivo;
+                    document.body.appendChild(enlace);
+                    enlace.click();
+                    enlace.remove();
+                    URL.revokeObjectURL(enlace.href);
+                } catch (error) {
+                    console.error('Archivos:', error);
+                    alerta('danger', 'No se pudo descargar el archivo.');
+                }
+            }
+
             function formatearTamano(bytes) {
                 if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
                 if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -185,8 +213,12 @@
                     const acciones = document.createElement('div');
                     const linkDescarga = document.createElement('a');
                     linkDescarga.className = 'btn btn-sm btn-outline-primary';
-                    linkDescarga.href = '/api/archivos/descargar/' + archivo.idArchivoTutorial;
+                    linkDescarga.href = '#';
                     linkDescarga.textContent = 'Descargar';
+                    linkDescarga.addEventListener('click', function (evento) {
+                        evento.preventDefault();
+                        descargarArchivo(archivo);
+                    });
                     acciones.appendChild(linkDescarga);
 
                     if (esPropietario) {
@@ -194,9 +226,13 @@
                         btnEliminar.type = 'button';
                         btnEliminar.className = 'btn btn-sm btn-outline-danger ms-1';
                         btnEliminar.textContent = 'Eliminar';
-                        btnEliminar.addEventListener('click', function () {
+                        btnEliminar.addEventListener('click', async function () {
                             if (!window.confirm('¿Eliminar el archivo "' + archivo.nombreArchivo + '"?')) return;
-                            fetch('/api/archivos/eliminar/' + archivo.idArchivoTutorial, { method: 'POST' })
+                            fetch('/api/archivos/eliminar/' + archivo.idArchivoTutorial, {
+                                method: 'POST',
+                                headers: window.TokenApi ? await window.TokenApi.cabeceraAutorizacion() : {},
+                                credentials: 'omit'
+                            })
                                 .then(function (respuesta) {
                                     if (!respuesta.ok) return mensajeDeError(respuesta, 'No se pudo eliminar el archivo.');
                                     alerta('success', 'Archivo eliminado.');
@@ -215,8 +251,12 @@
                 });
             }
 
-            function listarArchivos() {
-                fetch('/api/archivos/listar/' + idTutorial)
+            async function listarArchivos() {
+                fetch('/api/archivos/listar/' + idTutorial, {
+                    method: 'GET',
+                    headers: window.TokenApi ? await window.TokenApi.cabeceraAutorizacion() : {},
+                    credentials: 'omit'
+                })
                     .then(function (respuesta) {
                         if (!respuesta.ok) return respuesta.json().then(function () { throw new Error('No se pudieron listar los archivos.'); });
                         return respuesta.json();
@@ -229,7 +269,7 @@
             }
 
             if (btnSubir) {
-                btnSubir.addEventListener('click', function () {
+                btnSubir.addEventListener('click', async function () {
                     if (!entrada || !entrada.files || entrada.files.length === 0) {
                         alerta('danger', 'Selecciona un archivo primero.');
                         return;
@@ -240,6 +280,8 @@
                     btnSubir.disabled = true;
                     fetch('/api/archivos/subir?idTutorial=' + idTutorial, {
                         method: 'POST',
+                        headers: await autorizacion(),
+                        credentials: 'omit',
                         body: datosForm
                     })
                         .then(function (respuesta) {

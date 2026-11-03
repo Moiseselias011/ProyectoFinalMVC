@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
@@ -8,7 +9,7 @@ namespace ProyectoFinalMVC.Controllers.Api
    
     [Route("api/usuarios")]
     [ApiController]
-    [Authorize(Roles = Roles.Administrador)]
+    [Authorize(Roles = Roles.Administrador, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsuariosApiController : ControllerBase
     {
         private readonly IUsuariosServicio _usuarios;

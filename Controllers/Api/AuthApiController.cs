@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalMVC.Models;
 using ProyectoFinalMVC.Services;
@@ -13,13 +13,16 @@ namespace ProyectoFinalMVC.Controllers.Api
     public class AuthApiController : ControllerBase
     {
         private readonly IUsuariosServicio _usuarios;
+        private readonly ITokensServicio _tokens;
 
-        public AuthApiController(IUsuariosServicio usuarios)
+        public AuthApiController(IUsuariosServicio usuarios, ITokensServicio tokens)
         {
             _usuarios = usuarios;
+            _tokens = tokens;
         }
 
-       
+        
+        [AllowAnonymous]
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] RegistroRequest request)
         {
@@ -33,7 +36,7 @@ namespace ProyectoFinalMVC.Controllers.Api
             return Ok(new { Mensaje = "Registro completado." });
         }
 
-   
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -45,23 +48,13 @@ namespace ProyectoFinalMVC.Controllers.Api
             if (usuario is null)
                 return Unauthorized(new { Mensaje = "El email o la contraseña es incorrecto." });
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id_usuario.ToString()),
-                new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Rol)
-            };
-
-            var identidadUsuario = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identidadUsuario));
+            var (token, expiracion) = _tokens.GenerarToken(usuario);
 
             return Ok(new
             {
                 Mensaje = "Sesión iniciada.",
+                Token = token,
+                Expiracion = expiracion,
                 Usuario = new
                 {
                     usuario.Id_usuario,
@@ -73,15 +66,18 @@ namespace ProyectoFinalMVC.Controllers.Api
         }
 
  
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return Ok(new { Mensaje = "Sesión cerrada." });
+            return Ok(new
+            {
+                Mensaje = "El token JWT no se almacena en el servidor, así que el cierre de sesión se realiza en el cliente descartando el token. No existe un mecanismo real de invalidación del lado del servidor mientras el token no haya expirado."
+            });
         }
 
      
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("perfil")]
         public async Task<IActionResult> Perfil()
         {
