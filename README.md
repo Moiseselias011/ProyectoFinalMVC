@@ -97,7 +97,13 @@ Esta sección presenta el cumplimiento de los requerimientos solicitados, junto 
 
 
 
-### 6. Selección asíncrona (AJAX)
+### 6. Búsqueda Asíncrona de Tecnologías
+**Estado:** ✅ Cumplido
+
+**Código:** [TecnologiasApiController.cs](Controllers/Api/TecnologiasApiController.cs)
+
+**Evidencia:**
+![Búsqueda asíncrona de tecnologías](docs/evidencias/5.jpeg)
 
 
 
